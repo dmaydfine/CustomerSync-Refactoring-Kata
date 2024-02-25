@@ -15,7 +15,7 @@ public class CustomerFactory {
             Customer person = new Person();
             person.setExternalId(externalCustomer.getExternalId());
             person.setMasterExternalId(externalCustomer.getExternalId());
-            return  person;
+            return person;
         }
     }
 }

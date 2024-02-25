@@ -50,6 +50,5 @@ public class CustomerFactoryTest {
 
         // ASSERT
         assertNull(actual);
-
     }
 }
