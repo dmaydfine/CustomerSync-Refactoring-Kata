@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Customer {
+abstract public class Customer {
     private String externalId;
     private String masterExternalId;
     private Address address;
@@ -12,9 +12,8 @@ public class Customer {
     private List<ShoppingList> shoppingLists = new ArrayList<>();
     private String internalId;
     private String name;
-    private CustomerType customerType;
     private String companyNumber;
-    private Integer bonusPointsBalance;
+
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
@@ -52,10 +51,6 @@ public class Customer {
         return this.preferredStore;
     }
 
-    public CustomerType getCustomerType() {
-        return this.customerType;
-    }
-
     public List<ShoppingList> getShoppingLists() {
         return this.shoppingLists;
     }
@@ -80,20 +75,8 @@ public class Customer {
         return this.externalId;
     }
 
-    public void setCustomerType(CustomerType customerType) {
-        this.customerType = customerType;
-    }
-
     public void setInternalId(String internalId) {
         this.internalId = internalId;
-    }
-
-    public void setBonusPointsBalance(Integer bonusPointsBalance) {
-        this.bonusPointsBalance = bonusPointsBalance;
-    }
-
-    public Integer getBonusPointsBalance() {
-        return this.bonusPointsBalance;
     }
 
     public void addShoppingList(ShoppingList consumerShoppingList) {
@@ -101,6 +84,8 @@ public class Customer {
         newList.add(consumerShoppingList);
         this.setShoppingLists(newList);
     }
+
+    abstract public void setFieldsFromExternalDto(ExternalCustomer externalCustomer);
 
 
     @Override

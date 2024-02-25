@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 
 public class CustomerSyncTest {
-
     private static final String EXTERNAL_ID = "12345";
     private static final String INTERNAL_ID = "45435";
     private static final Integer BONUS_POINTS_BALANCE = 123;
@@ -33,10 +32,10 @@ public class CustomerSyncTest {
     public void syncCompany_byExternalId_shouldUpdate() {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalCompany();
-        Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
+        Customer company = createCompany(externalCustomer);
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
-        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(customer);
+        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(company);
         CustomerSync sut = new CustomerSync(db);
 
         // ACT
@@ -53,7 +52,7 @@ public class CustomerSyncTest {
         assertEquals(COMPANY_NUMBER, updatedCustomer.getCompanyNumber());
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
-        assertEquals(CustomerType.COMPANY, updatedCustomer.getCustomerType());
+        assertTrue(updatedCustomer instanceof Company);
         assertNull(updatedCustomer.getPreferredStore());
     }
 
@@ -61,10 +60,10 @@ public class CustomerSyncTest {
     public void syncPerson_byExternalId_shouldUpdate() {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalPerson();
-        Customer customer = createPerson();
+        Customer person = createPerson();
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
-        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(customer);
+        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(person);
         CustomerSync sut = new CustomerSync(db);
 
         // ACT
@@ -72,16 +71,15 @@ public class CustomerSyncTest {
 
         // ASSERT
         assertFalse(created);
-        ArgumentCaptor<Customer> argument = ArgumentCaptor.forClass(Customer.class);
+        ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
         verify(db, atLeastOnce()).updateCustomerRecord(argument.capture());
-        Customer updatedCustomer = argument.getValue();
+        Person updatedCustomer = argument.getValue();
         assertEquals(PERSON_NAME, updatedCustomer.getName());
         assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
         assertNull(updatedCustomer.getMasterExternalId());
         assertNull(updatedCustomer.getCompanyNumber());
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
-        assertEquals(CustomerType.PERSON, updatedCustomer.getCustomerType());
         assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
         assertNull(updatedCustomer.getPreferredStore());
     }
@@ -101,16 +99,15 @@ public class CustomerSyncTest {
 
         // ASSERT
         assertTrue(created);
-        ArgumentCaptor<Customer> argument = ArgumentCaptor.forClass(Customer.class);
+        ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
         verify(db, atLeastOnce()).updateCustomerRecord(argument.capture());
-        Customer updatedCustomer = argument.getValue();
+        Person updatedCustomer = argument.getValue();
         assertEquals(PERSON_NAME, updatedCustomer.getName());
         assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
         assertEquals(EXTERNAL_ID, updatedCustomer.getMasterExternalId());
         assertNull(updatedCustomer.getCompanyNumber());
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
-        assertEquals(CustomerType.PERSON, updatedCustomer.getCustomerType());
         assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
         assertNull(updatedCustomer.getPreferredStore());
     }
@@ -126,13 +123,12 @@ public class CustomerSyncTest {
         return externalCustomer;
     }
 
-    private Customer createCustomerWithSameCompanyAs(ExternalCustomer externalCustomer) {
-        Customer customer = new Customer();
-        customer.setCompanyNumber(externalCustomer.getCompanyNumber());
-        customer.setCustomerType(CustomerType.COMPANY);
-        customer.setInternalId(INTERNAL_ID);
-        customer.setExternalId(EXTERNAL_ID);
-        return customer;
+    private Company createCompany(ExternalCustomer externalCustomer) {
+        Company company = new Company();
+        company.setCompanyNumber(externalCustomer.getCompanyNumber());
+        company.setInternalId(INTERNAL_ID);
+        company.setExternalId(EXTERNAL_ID);
+        return company;
     }
 
     private ExternalCustomer createExternalPerson() {
@@ -145,12 +141,11 @@ public class CustomerSyncTest {
         return externalCustomer;
     }
 
-    private Customer createPerson() {
-        Customer customer = new Customer();
-        customer.setCustomerType(CustomerType.PERSON);
-        customer.setInternalId(INTERNAL_ID);
-        customer.setExternalId(EXTERNAL_ID);
-        return customer;
+    private Person createPerson() {
+        Person person = new Person();
+        person.setInternalId(INTERNAL_ID);
+        person.setExternalId(EXTERNAL_ID);
+        return person;
     }
 
 }
