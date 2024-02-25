@@ -4,28 +4,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomerMatches {
-    private Collection<Customer> duplicates = new ArrayList<>();
+    private final Collection<Customer> duplicates = new ArrayList<>();
     private String matchTerm;
     private Customer customer;
 
     public Customer getCustomer() {
-        return customer;
+        return this.customer;
     }
 
     public boolean hasDuplicates() {
-        return !duplicates.isEmpty();
+        return !this.duplicates.isEmpty();
     }
 
     public void addDuplicate(Customer duplicate) {
-        duplicates.add(duplicate);
+        this.duplicates.add(duplicate);
     }
 
     public Collection<Customer> getDuplicates() {
-        return duplicates;
+        return this.duplicates;
     }
 
     public String getMatchTerm() {
-        return matchTerm;
+        return this.matchTerm;
     }
 
     public void setMatchTerm(String matchTerm) {

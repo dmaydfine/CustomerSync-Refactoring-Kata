@@ -107,7 +107,7 @@ public class CustomerSync {
         final String externalId = externalCustomer.getExternalId();
         final String companyNumber = externalCustomer.getCompanyNumber();
 
-        CustomerMatches customerMatches = customerDataAccess.loadCompanyCustomer(externalId, companyNumber);
+        CustomerMatches customerMatches = this.customerDataAccess.loadCompanyCustomer(externalId, companyNumber);
 
         if (customerMatches.getCustomer() != null && !CustomerType.COMPANY.equals(customerMatches.getCustomer().getCustomerType())) {
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
@@ -138,7 +138,7 @@ public class CustomerSync {
     public CustomerMatches loadPerson(ExternalCustomer externalCustomer) {
         final String externalId = externalCustomer.getExternalId();
 
-        CustomerMatches customerMatches = customerDataAccess.loadPersonCustomer(externalId);
+        CustomerMatches customerMatches = this.customerDataAccess.loadPersonCustomer(externalId);
 
         if (customerMatches.getCustomer() != null) {
             if (!CustomerType.PERSON.equals(customerMatches.getCustomer().getCustomerType())) {
