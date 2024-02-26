@@ -29,7 +29,7 @@ public class CustomerSyncTest {
     private static final List<ShoppingList> SHOPPING_LIST = Arrays.asList(new ShoppingList("lipstick", "blusher"));
 
     @Test
-    public void syncCompany_byExternalId_shouldUpdate() {
+    public void syncCompany_byExternalId_shouldUpdate() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalCompany();
         Customer company = createCompany(externalCustomer);
@@ -57,7 +57,7 @@ public class CustomerSyncTest {
     }
 
     @Test
-    public void syncPerson_byExternalId_shouldUpdate() {
+    public void syncPerson_byExternalId_shouldUpdate() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalPerson();
         Customer person = createPerson();
@@ -85,7 +85,7 @@ public class CustomerSyncTest {
     }
 
     @Test
-    public void syncPerson_byExternalId_shouldCreate() {
+    public void syncPerson_byExternalId_shouldCreate() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalPerson();
 

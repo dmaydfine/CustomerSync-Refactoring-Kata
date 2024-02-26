@@ -28,7 +28,7 @@ public class CompanyByCompanyNumberTest {
     }
 
     @Test
-    public void match_externalIdInMatchNull_shouldAcceptExternalId() {
+    public void match_externalIdInMatchNull_shouldAcceptExternalId() throws ConflictException {
         // ARRANGE
         CustomerMatches matches = new CustomerMatches();
         matches.setCustomer(new Company());
@@ -49,7 +49,7 @@ public class CompanyByCompanyNumberTest {
     }
 
     @Test
-    public void match_matchingExternalId_shouldAcceptExternalId() {
+    public void match_matchingExternalId_shouldAcceptExternalId() throws ConflictException {
         // ARRANGE
         CustomerMatches matches = new CustomerMatches();
         matches.setCustomer(new Company());

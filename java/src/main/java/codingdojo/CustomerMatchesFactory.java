@@ -1,7 +1,7 @@
 package codingdojo;
 
 public class CustomerMatchesFactory {
-    public CustomerMatches from(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) {
+    public CustomerMatches from(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) throws ConflictException {
         if (externalCustomer == null) {
             return null;
         }
@@ -14,7 +14,7 @@ public class CustomerMatchesFactory {
         return  customerMatches;
     }
 
-    private CustomerMatches loadCompany(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) {
+    private CustomerMatches loadCompany(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) throws ConflictException {
         final String externalId = externalCustomer.getExternalId();
         final String externalCompanyNumber = externalCustomer.getCompanyNumber();
 
@@ -31,7 +31,7 @@ public class CustomerMatchesFactory {
         return matches;
     }
 
-    private CustomerMatches loadPerson(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) {
+    private CustomerMatches loadPerson(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) throws ConflictException {
         final String externalId = externalCustomer.getExternalId();
 
         var matches = customerDataAccess.loadPersonCustomer(externalId);

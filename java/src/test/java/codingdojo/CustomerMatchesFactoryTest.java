@@ -56,7 +56,7 @@ public class CustomerMatchesFactoryTest {
     }
 
     @Test
-    public void from_forExternalPersonButNoEntryInDb_shouldReturnEmptyMatch() {
+    public void from_forExternalPersonButNoEntryInDb_shouldReturnEmptyMatch() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = new ExternalCustomer();
         externalCustomer.setExternalId(EXTERNAL_ID);
@@ -72,7 +72,7 @@ public class CustomerMatchesFactoryTest {
     }
 
     @Test
-    public void from_forPersonByExternalId_shouldReturnDbEntry() {
+    public void from_forPersonByExternalId_shouldReturnDbEntry() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = new ExternalCustomer();
         externalCustomer.setExternalId(EXTERNAL_ID);
@@ -90,7 +90,7 @@ public class CustomerMatchesFactoryTest {
     }
 
     @Test
-    public void from_forNull_shouldReturnNull() {
+    public void from_forNull_shouldReturnNull() throws ConflictException {
         // ACT
         var actual = this.underTest.from(null, null);
 

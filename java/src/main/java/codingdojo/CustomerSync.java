@@ -12,7 +12,7 @@ public class CustomerSync {
         this.customerMatchesFactory = customerMatchesFactory;
     }
 
-    public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
+    public boolean syncWithDataLayer(ExternalCustomer externalCustomer) throws ConflictException {
         var customerMatches = this.customerMatchesFactory.from(externalCustomer, this.customerDataAccess);
 
         var customer = customerMatches.getCustomer();
