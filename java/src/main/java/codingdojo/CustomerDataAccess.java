@@ -1,5 +1,7 @@
 package codingdojo;
 
+import java.util.Collection;
+
 public class CustomerDataAccess {
 
     private final CustomerDataLayer customerDataLayer;
@@ -8,7 +10,7 @@ public class CustomerDataAccess {
         this.customerDataLayer = customerDataLayer;
     }
 
-    public CustomerMatches loadCompanyCustomer(String externalId, String companyNumber) {
+    public CustomerMatches loadCompany(String externalId, String companyNumber) {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByExternalId = this.customerDataLayer.findByExternalId(externalId);
         if (matchByExternalId != null) {
@@ -27,7 +29,7 @@ public class CustomerDataAccess {
         return matches;
     }
 
-    public CustomerMatches loadPersonCustomer(String externalId) {
+    public CustomerMatches loadPerson(String externalId) {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByPersonalNumber = this.customerDataLayer.findByExternalId(externalId);
         matches.setCustomer(matchByPersonalNumber);
@@ -35,17 +37,47 @@ public class CustomerDataAccess {
         return matches;
     }
 
-    public Customer updateCustomerRecord(Customer customer) {
-        return this.customerDataLayer.updateCustomerRecord(customer);
+    public boolean createOrUpdate(Customer customer) {
+        if (customer.getInternalId() == null) {
+            createCustomerAndRelations(customer);
+            return true;
+        }
+        updateCustomerAndRelations(customer);
+        return false;
+    }
+    public void createOrUpdateDuplicates(Collection<Customer> duplicates) {
+        for (Customer duplicate : duplicates) {
+            if (duplicate.getInternalId() == null) {
+                createCustomerAndRelations(duplicate);
+            } else {
+                updateCustomerAndRelations(duplicate);
+            }
+        }
     }
 
-    public Customer createCustomerRecord(Customer customer) {
+    private void updateShoppingList(ShoppingList consumerShoppingList) {
+        this.customerDataLayer.updateShoppingList(consumerShoppingList);
+    }
+
+    private Customer createCustomerAndRelations(Customer customer) {
+        for (var shoppingList : customer.getShoppingLists()) {
+            this.updateShoppingList(shoppingList);
+        }
+        return this.createCustomerRecord(customer);
+    }
+
+    private Customer updateCustomerAndRelations(Customer customer) {
+        for (var shoppingList : customer.getShoppingLists()) {
+            this.updateShoppingList(shoppingList);
+        }
+        return this.updateCustomerRecord(customer);
+    }
+
+    private Customer createCustomerRecord(Customer customer) {
         return this.customerDataLayer.createCustomerRecord(customer);
     }
 
-    public void updateShoppingList(Customer customer, ShoppingList consumerShoppingList) {
-        customer.addShoppingList(consumerShoppingList);
-        this.customerDataLayer.updateShoppingList(consumerShoppingList);
-        this.customerDataLayer.updateCustomerRecord(customer);
+    private Customer updateCustomerRecord(Customer customer) {
+        return this.customerDataLayer.updateCustomerRecord(customer);
     }
 }

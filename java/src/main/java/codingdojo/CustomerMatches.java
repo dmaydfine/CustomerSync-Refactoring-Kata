@@ -12,10 +12,6 @@ public class CustomerMatches {
         return this.customer;
     }
 
-    public boolean hasDuplicates() {
-        return !this.duplicates.isEmpty();
-    }
-
     public void addDuplicate(Customer duplicate) {
         this.duplicates.add(duplicate);
     }

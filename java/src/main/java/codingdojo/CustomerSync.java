@@ -1,6 +1,6 @@
 package codingdojo;
 
-import java.util.List;
+import java.util.Collection;
 
 public class CustomerSync {
 
@@ -20,38 +20,12 @@ public class CustomerSync {
             customer = CustomerFactory.from(externalCustomer);
         }
 
-        populateFields(externalCustomer, customer);
+        this.populateFieldsAndDuplicates(externalCustomer, customer, customerMatches.getDuplicates());
 
-        boolean created = false;
-        if (customer.getInternalId() == null) {
-            customer = createCustomer(customer);
-            created = true;
-        } else {
-            updateCustomer(customer);
-        }
-        updateContactInfo(externalCustomer, customer);
-
-        if (customerMatches.hasDuplicates()) {
-            for (Customer duplicate : customerMatches.getDuplicates()) {
-                updateDuplicate(externalCustomer, duplicate);
-            }
-        }
-
-        updateRelations(externalCustomer, customer);
-        updatePreferredStore(externalCustomer, customer);
+        var created = this.customerDataAccess.createOrUpdate(customer);
+        this.customerDataAccess.createOrUpdateDuplicates(customerMatches.getDuplicates());
 
         return created;
-    }
-
-    private void updateRelations(ExternalCustomer externalCustomer, Customer customer) {
-        List<ShoppingList> consumerShoppingLists = externalCustomer.getShoppingLists();
-        for (ShoppingList consumerShoppingList : consumerShoppingLists) {
-            this.customerDataAccess.updateShoppingList(customer, consumerShoppingList);
-        }
-    }
-
-    private Customer updateCustomer(Customer customer) {
-        return this.customerDataAccess.updateCustomerRecord(customer);
     }
 
     private void updateDuplicate(ExternalCustomer externalCustomer, Customer duplicate) {
@@ -60,27 +34,13 @@ public class CustomerSync {
         }
 
         duplicate.setName(externalCustomer.getName());
-
-        if (duplicate.getInternalId() == null) {
-            createCustomer(duplicate);
-        } else {
-            updateCustomer(duplicate);
-        }
     }
 
-    private void updatePreferredStore(ExternalCustomer externalCustomer, Customer customer) {
-        customer.setPreferredStore(externalCustomer.getPreferredStore());
-    }
-
-    private Customer createCustomer(Customer customer) {
-        return this.customerDataAccess.createCustomerRecord(customer);
-    }
-
-    private void populateFields(ExternalCustomer externalCustomer, Customer customer) {
+    private void populateFieldsAndDuplicates(ExternalCustomer externalCustomer, Customer customer, Collection<Customer> duplicates) {
         customer.setFieldsFromExternalDto(externalCustomer);
-    }
 
-    private void updateContactInfo(ExternalCustomer externalCustomer, Customer customer) {
-        customer.setAddress(externalCustomer.getPostalAddress());
+        for (Customer duplicate : duplicates) {
+            updateDuplicate(externalCustomer, duplicate);
+        }
     }
 }

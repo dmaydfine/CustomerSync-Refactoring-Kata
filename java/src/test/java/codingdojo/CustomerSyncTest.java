@@ -27,6 +27,7 @@ public class CustomerSyncTest {
     private static final String COMPANY_NAME = "Acme Inc.";
     private static final String COMPANY_NUMBER = "470813-8895";
     private static final List<ShoppingList> SHOPPING_LIST = Arrays.asList(new ShoppingList("lipstick", "blusher"));
+    private static final String PREFERRED_STORE = "preferred";
 
     @Test
     public void syncCompany_byExternalId_shouldUpdate() throws ConflictException {
@@ -53,7 +54,7 @@ public class CustomerSyncTest {
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
         assertTrue(updatedCustomer instanceof Company);
-        assertNull(updatedCustomer.getPreferredStore());
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
     }
 
     @Test
@@ -81,7 +82,7 @@ public class CustomerSyncTest {
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
         assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
-        assertNull(updatedCustomer.getPreferredStore());
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
     }
 
     @Test
@@ -100,7 +101,7 @@ public class CustomerSyncTest {
         // ASSERT
         assertTrue(created);
         ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
-        verify(db, atLeastOnce()).updateCustomerRecord(argument.capture());
+        verify(db, atLeastOnce()).createCustomerRecord(argument.capture());
         Person updatedCustomer = argument.getValue();
         assertEquals(PERSON_NAME, updatedCustomer.getName());
         assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
@@ -109,7 +110,7 @@ public class CustomerSyncTest {
         assertEquals(ADDRESS, updatedCustomer.getAddress());
         assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
         assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
-        assertNull(updatedCustomer.getPreferredStore());
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
     }
 
 
@@ -120,6 +121,7 @@ public class CustomerSyncTest {
         externalCustomer.setAddress(ADDRESS);
         externalCustomer.setCompanyNumber(COMPANY_NUMBER);
         externalCustomer.setShoppingLists(SHOPPING_LIST);
+        externalCustomer.setPreferredStore(PREFERRED_STORE);
         return externalCustomer;
     }
 
@@ -138,6 +140,7 @@ public class CustomerSyncTest {
         externalCustomer.setBonusPointsBalance(BONUS_POINTS_BALANCE);
         externalCustomer.setAddress(ADDRESS);
         externalCustomer.setShoppingLists(SHOPPING_LIST);
+        externalCustomer.setPreferredStore(PREFERRED_STORE);
         return externalCustomer;
     }
 
@@ -147,5 +150,4 @@ public class CustomerSyncTest {
         person.setExternalId(EXTERNAL_ID);
         return person;
     }
-
 }

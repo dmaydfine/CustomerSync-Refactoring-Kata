@@ -31,7 +31,7 @@ public class CustomerMatchesFactoryTest {
         Customer person = new Person();
         CustomerMatches personMatches = new CustomerMatches();
         personMatches.setCustomer(person);
-        when(this.mockDbAccess.loadCompanyCustomer(EXTERNAL_ID, COMPANY_NUMBER)).thenReturn(personMatches);
+        when(this.mockDbAccess.loadCompany(EXTERNAL_ID, COMPANY_NUMBER)).thenReturn(personMatches);
 
         // ACT + ASSERT
         assertThrows(ConflictException.class, () -> {
@@ -47,7 +47,7 @@ public class CustomerMatchesFactoryTest {
         Customer company = new Company();
         CustomerMatches companyMatches = new CustomerMatches();
         companyMatches.setCustomer(company);
-        when(this.mockDbAccess.loadPersonCustomer(EXTERNAL_ID)).thenReturn(companyMatches);
+        when(this.mockDbAccess.loadPerson(EXTERNAL_ID)).thenReturn(companyMatches);
 
         // ACT + ASSERT
         assertThrows(ConflictException.class, () -> {
@@ -62,7 +62,7 @@ public class CustomerMatchesFactoryTest {
         externalCustomer.setExternalId(EXTERNAL_ID);
         CustomerMatches withoutMatch = new CustomerMatches();
         withoutMatch.setCustomer(null);
-        when(this.mockDbAccess.loadPersonCustomer(EXTERNAL_ID)).thenReturn(withoutMatch);
+        when(this.mockDbAccess.loadPerson(EXTERNAL_ID)).thenReturn(withoutMatch);
 
         // ACT
         var actual = this.underTest.from(externalCustomer, this.mockDbAccess);
@@ -80,7 +80,7 @@ public class CustomerMatchesFactoryTest {
         Customer person = new Person();
         person.setExternalId(EXTERNAL_ID);
         matches.setCustomer(person);
-        when(this.mockDbAccess.loadPersonCustomer(EXTERNAL_ID)).thenReturn(matches);
+        when(this.mockDbAccess.loadPerson(EXTERNAL_ID)).thenReturn(matches);
 
         // ACT
         var actual = this.underTest.from(externalCustomer, this.mockDbAccess);

@@ -18,7 +18,7 @@ public class CustomerMatchesFactory {
         final String externalId = externalCustomer.getExternalId();
         final String externalCompanyNumber = externalCustomer.getCompanyNumber();
 
-        var matches = customerDataAccess.loadCompanyCustomer(externalId, externalCompanyNumber);
+        var matches = customerDataAccess.loadCompany(externalId, externalCompanyNumber);
 
         if (matches.getCustomer() != null && !(matches.getCustomer() instanceof Company)) {
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
@@ -34,7 +34,7 @@ public class CustomerMatchesFactory {
     private CustomerMatches loadPerson(ExternalCustomer externalCustomer, CustomerDataAccess customerDataAccess) throws ConflictException {
         final String externalId = externalCustomer.getExternalId();
 
-        var matches = customerDataAccess.loadPersonCustomer(externalId);
+        var matches = customerDataAccess.loadPerson(externalId);
 
         if (matches.getCustomer() != null) {
             if (!(matches.getCustomer() instanceof Person)) {
