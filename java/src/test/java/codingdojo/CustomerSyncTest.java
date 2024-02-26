@@ -61,7 +61,8 @@ public class CustomerSyncTest {
     public void syncPerson_byExternalId_shouldUpdate() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalPerson();
-        Customer person = createPerson();
+        Person person = createPerson();
+        person.setBonusPointsBalance(9999);  // these should be overwritten by the external data
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
         when(db.findByExternalId(EXTERNAL_ID)).thenReturn(person);
