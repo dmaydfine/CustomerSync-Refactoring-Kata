@@ -15,13 +15,15 @@ public class Person extends Customer {
 
     @Override
     public void setFieldsFromExternalDto(ExternalCustomer externalCustomer) {
-        this.setName(externalCustomer.getName());
-        this.setBonusPointsBalance(externalCustomer.getBonusPointsBalance());
-        this.setAddress(externalCustomer.getPostalAddress());
-        this.setPreferredStore(externalCustomer.getPreferredStore());
-        List<ShoppingList> consumerShoppingLists = externalCustomer.getShoppingLists();
-        for (ShoppingList consumerShoppingList : consumerShoppingLists) {
-            this.addShoppingList(consumerShoppingList);
+        if (externalCustomer != null) {
+            this.setName(externalCustomer.getName());
+            this.setBonusPointsBalance(externalCustomer.getBonusPointsBalance());
+            this.setAddress(externalCustomer.getPostalAddress());
+            this.setPreferredStore(externalCustomer.getPreferredStore());
+            List<ShoppingList> consumerShoppingLists = externalCustomer.getShoppingLists();
+            for (ShoppingList consumerShoppingList : consumerShoppingLists) {
+                this.addShoppingList(consumerShoppingList);
+            }
         }
     }
 }
