@@ -5,18 +5,15 @@ import java.util.List;
 public class CustomerSync {
 
     private final CustomerDataAccess customerDataAccess;
+    private final CustomerMatchesFactory customerMatchesFactory;
 
-    public CustomerSync(CustomerDataLayer customerDataLayer) {
-        this(new CustomerDataAccess(customerDataLayer));
-    }
-
-    public CustomerSync(CustomerDataAccess db) {
-        this.customerDataAccess = db;
+    public CustomerSync(CustomerDataLayer customerDataLayer, CustomerMatchesFactory customerMatchesFactory) {
+        this.customerDataAccess = new CustomerDataAccess(customerDataLayer);
+        this.customerMatchesFactory = customerMatchesFactory;
     }
 
     public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
-        var customerMatchesFactory = new CustomerMatchesFactory();
-        var customerMatches = customerMatchesFactory.from(externalCustomer, this.customerDataAccess);
+        var customerMatches = this.customerMatchesFactory.from(externalCustomer, this.customerDataAccess);
 
         var customer = customerMatches.getCustomer();
         if (customer == null) {

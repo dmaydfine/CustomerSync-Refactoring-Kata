@@ -36,7 +36,7 @@ public class CustomerSyncTest {
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
         when(db.findByExternalId(EXTERNAL_ID)).thenReturn(company);
-        CustomerSync sut = new CustomerSync(db);
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
 
         // ACT
         boolean created = sut.syncWithDataLayer(externalCustomer);
@@ -64,7 +64,7 @@ public class CustomerSyncTest {
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
         when(db.findByExternalId(EXTERNAL_ID)).thenReturn(person);
-        CustomerSync sut = new CustomerSync(db);
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
 
         // ACT
         boolean created = sut.syncWithDataLayer(externalCustomer);
@@ -92,7 +92,7 @@ public class CustomerSyncTest {
         CustomerDataLayer db = mock(CustomerDataLayer.class);
         when(db.findByExternalId(EXTERNAL_ID)).thenReturn(null);  // no entry means we create a new customer
         when(db.createCustomerRecord(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
-        CustomerSync sut = new CustomerSync(db);
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
 
         // ACT
         boolean created = sut.syncWithDataLayer(externalCustomer);
