@@ -15,6 +15,7 @@ public class CustomerSync {
     public boolean syncWithDataLayer(ExternalCustomer externalCustomer) throws ConflictException {
         var customerMatches = this.customerMatchesFactory.from(externalCustomer, this.customerDataAccess);
 
+        // We need to create a new customer object in case we could not find one in the database.
         var customer = customerMatches.getCustomer();
         if (customer == null) {
             customer = CustomerFactory.from(externalCustomer);

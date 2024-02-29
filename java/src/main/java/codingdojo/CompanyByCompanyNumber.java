@@ -1,6 +1,6 @@
 package codingdojo;
 
-public class CompanyByCompanyNumber implements CompanyMatchingStrategy {
+public class CompanyByCompanyNumber implements CompanyMatchesStrategy {
     @Override
     public void match(CustomerMatches matches, ExternalCustomer externalCustomer) throws ConflictException {
         Customer company = matches.getCustomer();

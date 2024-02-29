@@ -33,7 +33,7 @@ public class CustomerSyncTest {
     public void syncCompany_byExternalId_shouldUpdate() throws ConflictException {
         // ARRANGE
         ExternalCustomer externalCustomer = createExternalCompany();
-        Customer company = createCompany(externalCustomer);
+        Company company = createCompany(externalCustomer);
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
         when(db.findByExternalId(EXTERNAL_ID)).thenReturn(company);

@@ -1,6 +1,6 @@
 package codingdojo;
 
-public class CompanyByExternalId implements CompanyMatchingStrategy {
+public class CompanyByExternalId implements CompanyMatchesStrategy {
     @Override
     public void match(CustomerMatches matches, ExternalCustomer externalCustomer) {
         Customer company = matches.getCustomer();

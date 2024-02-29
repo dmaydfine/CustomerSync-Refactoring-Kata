@@ -1,7 +1,7 @@
 package codingdojo;
 
 public class CompanyMatchingFactory {
-    static public CompanyMatchingStrategy from(String matchTerm) {
+    static public CompanyMatchesStrategy from(String matchTerm) {
         if ("ExternalId".equals(matchTerm)) {
             return new CompanyByExternalId();
         }

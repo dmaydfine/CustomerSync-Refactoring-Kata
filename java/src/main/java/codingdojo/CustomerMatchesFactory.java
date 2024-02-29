@@ -24,7 +24,7 @@ public class CustomerMatchesFactory {
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
         }
 
-        CompanyMatchingStrategy strategy = CompanyMatchingFactory.from(matches.getMatchTerm());
+        CompanyMatchesStrategy strategy = CompanyMatchingFactory.from(matches.getMatchTerm());
         if (strategy != null) {
             strategy.match(matches, externalCustomer);
         }
