@@ -1,30 +1,43 @@
 package codingdojo;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 public class CustomerSyncTest {
+    private static final String EXTERNAL_ID = "12345";
+    private static final String INTERNAL_ID = "45435";
+    private static final Integer BONUS_POINTS_BALANCE = 123;
+    private static final Address ADDRESS = new Address("123 main st", "Helsingborg", "SE-123 45");
+    private static final String PERSON_NAME = "Alice";
+    private static final String COMPANY_NAME = "Acme Inc.";
+    private static final String COMPANY_NUMBER = "470813-8895";
+    private static final List<ShoppingList> SHOPPING_LIST = Arrays.asList(new ShoppingList("lipstick", "blusher"));
+    private static final String PREFERRED_STORE = "preferred";
 
     @Test
-    public void syncCompanyByExternalId(){
-        String externalId = "12345";
-
+    public void syncCompany_byExternalId_shouldUpdate() throws ConflictException {
+        // ARRANGE
         ExternalCustomer externalCustomer = createExternalCompany();
-        externalCustomer.setExternalId(externalId);
-
-        Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
-        customer.setExternalId(externalId);
+        Company company = createCompany(externalCustomer);
 
         CustomerDataLayer db = mock(CustomerDataLayer.class);
-        when(db.findByExternalId(externalId)).thenReturn(customer);
-        CustomerSync sut = new CustomerSync(db);
+        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(company);
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
 
         // ACT
         boolean created = sut.syncWithDataLayer(externalCustomer);
@@ -34,33 +47,108 @@ public class CustomerSyncTest {
         ArgumentCaptor<Customer> argument = ArgumentCaptor.forClass(Customer.class);
         verify(db, atLeastOnce()).updateCustomerRecord(argument.capture());
         Customer updatedCustomer = argument.getValue();
-        assertEquals(externalCustomer.getName(), updatedCustomer.getName());
-        assertEquals(externalCustomer.getExternalId(), updatedCustomer.getExternalId());
+        assertEquals(COMPANY_NAME, updatedCustomer.getName());
+        assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
         assertNull(updatedCustomer.getMasterExternalId());
-        assertEquals(externalCustomer.getCompanyNumber(), updatedCustomer.getCompanyNumber());
-        assertEquals(externalCustomer.getPostalAddress(), updatedCustomer.getAddress());
-        assertEquals(externalCustomer.getShoppingLists(), updatedCustomer.getShoppingLists());
-        assertEquals(CustomerType.COMPANY, updatedCustomer.getCustomerType());
-        assertNull(updatedCustomer.getPreferredStore());
+        assertEquals(COMPANY_NUMBER, updatedCustomer.getCompanyNumber());
+        assertEquals(ADDRESS, updatedCustomer.getAddress());
+        assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
+        assertTrue(updatedCustomer instanceof Company);
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
+    }
+
+    @Test
+    public void syncPerson_byExternalId_shouldUpdate() throws ConflictException {
+        // ARRANGE
+        ExternalCustomer externalCustomer = createExternalPerson();
+        Person person = createPerson();
+        person.setBonusPointsBalance(9999);  // these should be overwritten by the external data
+
+        CustomerDataLayer db = mock(CustomerDataLayer.class);
+        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(person);
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
+
+        // ACT
+        boolean created = sut.syncWithDataLayer(externalCustomer);
+
+        // ASSERT
+        assertFalse(created);
+        ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
+        verify(db, atLeastOnce()).updateCustomerRecord(argument.capture());
+        Person updatedCustomer = argument.getValue();
+        assertEquals(PERSON_NAME, updatedCustomer.getName());
+        assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
+        assertNull(updatedCustomer.getMasterExternalId());
+        assertNull(updatedCustomer.getCompanyNumber());
+        assertEquals(ADDRESS, updatedCustomer.getAddress());
+        assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
+        assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
+    }
+
+    @Test
+    public void syncPerson_byExternalId_shouldCreate() throws ConflictException {
+        // ARRANGE
+        ExternalCustomer externalCustomer = createExternalPerson();
+
+        CustomerDataLayer db = mock(CustomerDataLayer.class);
+        when(db.findByExternalId(EXTERNAL_ID)).thenReturn(null);  // no entry means we create a new customer
+        when(db.createCustomerRecord(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
+        CustomerSync sut = new CustomerSync(db, new CustomerMatchesFactory());
+
+        // ACT
+        boolean created = sut.syncWithDataLayer(externalCustomer);
+
+        // ASSERT
+        assertTrue(created);
+        ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
+        verify(db, atLeastOnce()).createCustomerRecord(argument.capture());
+        Person updatedCustomer = argument.getValue();
+        assertEquals(PERSON_NAME, updatedCustomer.getName());
+        assertEquals(EXTERNAL_ID, updatedCustomer.getExternalId());
+        assertEquals(EXTERNAL_ID, updatedCustomer.getMasterExternalId());
+        assertNull(updatedCustomer.getCompanyNumber());
+        assertEquals(ADDRESS, updatedCustomer.getAddress());
+        assertEquals(SHOPPING_LIST, updatedCustomer.getShoppingLists());
+        assertEquals(BONUS_POINTS_BALANCE, updatedCustomer.getBonusPointsBalance());
+        assertEquals(PREFERRED_STORE, updatedCustomer.getPreferredStore());
     }
 
 
     private ExternalCustomer createExternalCompany() {
         ExternalCustomer externalCustomer = new ExternalCustomer();
-        externalCustomer.setExternalId("12345");
-        externalCustomer.setName("Acme Inc.");
-        externalCustomer.setAddress(new Address("123 main st", "Helsingborg", "SE-123 45"));
-        externalCustomer.setCompanyNumber("470813-8895");
-        externalCustomer.setShoppingLists(Arrays.asList(new ShoppingList("lipstick", "blusher")));
+        externalCustomer.setExternalId(EXTERNAL_ID);
+        externalCustomer.setName(COMPANY_NAME);
+        externalCustomer.setAddress(ADDRESS);
+        externalCustomer.setCompanyNumber(COMPANY_NUMBER);
+        externalCustomer.setShoppingLists(SHOPPING_LIST);
+        externalCustomer.setPreferredStore(PREFERRED_STORE);
         return externalCustomer;
     }
 
-    private Customer createCustomerWithSameCompanyAs(ExternalCustomer externalCustomer) {
-        Customer customer = new Customer();
-        customer.setCompanyNumber(externalCustomer.getCompanyNumber());
-        customer.setCustomerType(CustomerType.COMPANY);
-        customer.setInternalId("45435");
-        return customer;
+    private Company createCompany(ExternalCustomer externalCustomer) {
+        Company company = new Company();
+        company.setCompanyNumber(externalCustomer.getCompanyNumber());
+        company.setInternalId(INTERNAL_ID);
+        company.setExternalId(EXTERNAL_ID);
+        return company;
     }
 
+    private ExternalCustomer createExternalPerson() {
+        ExternalCustomer externalCustomer = new ExternalCustomer();
+        externalCustomer.setExternalId(EXTERNAL_ID);
+        externalCustomer.setName(PERSON_NAME);
+        externalCustomer.setBonusPointsBalance(BONUS_POINTS_BALANCE);
+        externalCustomer.setAddress(ADDRESS);
+        externalCustomer.setShoppingLists(SHOPPING_LIST);
+        externalCustomer.setPreferredStore(PREFERRED_STORE);
+        return externalCustomer;
+    }
+
+    private Person createPerson() {
+        Person person = new Person();
+        person.setInternalId(INTERNAL_ID);
+        person.setExternalId(EXTERNAL_ID);
+        return person;
+    }
 }

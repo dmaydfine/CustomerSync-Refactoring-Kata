@@ -9,25 +9,26 @@ public class ExternalCustomer {
     private List<ShoppingList> shoppingLists;
     private String externalId;
     private String companyNumber;
+    private Integer bonusPointsBalance;
 
     public String getExternalId() {
-        return externalId;
+        return this.externalId;
     }
 
     public String getCompanyNumber() {
-        return companyNumber;
+        return this.companyNumber;
     }
 
     public boolean isCompany() {
-        return companyNumber != null;
+        return this.companyNumber != null;
     }
 
     public Address getPostalAddress() {
-        return address;
+        return this.address;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -35,7 +36,7 @@ public class ExternalCustomer {
     }
 
     public String getPreferredStore() {
-        return preferredStore;
+        return this.preferredStore;
     }
 
     public void setPreferredStore(String preferredStore) {
@@ -43,7 +44,7 @@ public class ExternalCustomer {
     }
 
     public List<ShoppingList> getShoppingLists() {
-        return shoppingLists;
+        return this.shoppingLists;
     }
 
     public void setShoppingLists(List<ShoppingList> shoppingLists) {
@@ -62,4 +63,11 @@ public class ExternalCustomer {
         this.address = address;
     }
 
+    public Integer getBonusPointsBalance() {
+        return this.bonusPointsBalance;
+    }
+
+    public void setBonusPointsBalance(Integer bonusPointsBalance) {
+        this.bonusPointsBalance = bonusPointsBalance;
+    }
 }
